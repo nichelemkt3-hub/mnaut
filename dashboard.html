@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Minha Empresa</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="logo">⚡ Minha Empresa</div>
+      <nav>
+        <a href="#" class="active" onclick="switchTab('dashboard')">📊 Dashboard</a>
+        <a href="#" onclick="switchTab('items')">📦 Produtos</a>
+        <a href="#" onclick="switchTab('content')">📝 Conteúdo</a>
+        <a href="#" onclick="switchTab('prompts')">🤖 Prompts</a>
+        <a href="#" onclick="showChangePassword()">🔑 Alterar Senha</a>
+        <a href="#" onclick="logout()">🚪 Sair</a>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <div class="dashboard-header">
+        <h1>Painel Administrativo</h1>
+        <button class="btn-logout" onclick="logout()">Sair</button>
+      </div>
+
+      <div class="warning-banner" id="warningBanner" style="display:none;">
+        ⚠️ <strong>Altere sua senha imediatamente por segurança.</strong>
+        <button class="btn-action btn-edit" onclick="showChangePassword()" style="margin-left:auto;">Alterar Agora</button>
+      </div>
+
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="dashboard" onclick="switchTab('dashboard')">📊 Dashboard</button>
+        <button class="admin-tab" data-tab="items" onclick="switchTab('items')">📦 Produtos</button>
+        <button class="admin-tab" data-tab="content" onclick="switchTab('content')">📝 Conteúdo</button>
+        <button class="admin-tab" data-tab="prompts" onclick="switchTab('prompts')">🤖 Prompts</button>
+      </div>
+
+      <!-- Dashboard Tab -->
+      <div class="tab-content active" id="tab-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="label">Total de Itens</div>
+            <div class="value" id="totalItems">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Itens Ativos</div>
+            <div class="value" id="activeItems">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Status</div>
+            <div class="value" style="font-size:1.25rem;color:#4ade80;">Online ✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Items Tab -->
+      <div class="tab-content" id="tab-items">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+          <h2>Produtos / Serviços</h2>
+          <button class="btn-primary" onclick="addItem()">+ Novo Item</button>
+        </div>
+        <div class="data-table">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Preço</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="itemsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Content Tab -->
+      <div class="tab-content" id="tab-content">
+        <h2 style="margin-bottom:1.5rem;">Editar Conteúdo do Site</h2>
+        <div class="content-editor">
+          <h3>Hero / Banner</h3>
+          <label>Título Principal</label>
+          <input type="text" id="editHeroTitle">
+          <label>Subtítulo</label>
+          <input type="text" id="editHeroSubtitle">
+        </div>
+        <div class="content-editor">
+          <h3>Sobre Nós</h3>
+          <label>Texto</label>
+          <textarea id="editAboutText" rows="4"></textarea>
+        </div>
+        <div class="content-editor">
+          <h3>Rodapé</h3>
+          <label>Texto do Rodapé</label>
+          <input type="text" id="editFooterText">
+        </div>
+        <button class="btn-primary" onclick="saveContent()" style="margin-top:1rem;">💾 Salvar Conteúdo</button>
+      </div>
+
+      <!-- Prompts Tab -->
+      <div class="tab-content" id="tab-prompts">
+        <h2 style="margin-bottom:1rem;">Atualização por Prompt</h2>
+        <p style="color:#888;margin-bottom:1.5rem;font-size:0.9rem;">Descreva as alterações desejadas. Ex: "título: Novo Título" ou "subtítulo: Slogan aqui"</p>
+        <div class="prompt-box">
+          <textarea id="promptInput" placeholder="Ex: título: Tecnologia do Futuro"></textarea>
+          <button class="btn-primary" onclick="applyPrompt()" style="width:100%;">🤖 Aplicar Prompt</button>
+          <div class="prompt-history" id="promptHistory"></div>
+        </div>
+        <div style="margin-top:1.5rem;padding:1rem;background:rgba(0,180,216,0.1);border-radius:8px;border:1px solid rgba(0,180,216,0.2);">
+          <p style="font-size:0.85rem;color:var(--admin-accent);">💡 Este sistema interpreta comandos locais em JavaScript. Para IA avançada, integre uma API externa neste campo.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Item Modal -->
+  <div class="modal-overlay" id="itemModal">
+    <div class="modal">
+      <h2 id="modalTitle">Novo Item</h2>
+      <form id="itemForm" onsubmit="event.preventDefault(); saveItem();">
+        <input type="hidden" id="itemId">
+        <input type="text" id="itemName" placeholder="Nome do item" required>
+        <textarea id="itemDesc" placeholder="Descrição" rows="3" required></textarea>
+        <input type="text" id="itemPrice" placeholder="Preço (ex: R$ 1.000)" required>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Password Modal -->
+  <div class="modal-overlay" id="passwordModal">
+    <div class="modal">
+      <h2>Alterar Senha</h2>
+      <input type="password" id="currentPass" placeholder="Senha atual">
+      <input type="password" id="newPass" placeholder="Nova senha (min. 6 caracteres)">
+      <input type="password" id="confirmPass" placeholder="Confirmar nova senha">
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="document.getElementById('passwordModal').classList.remove('active')">Cancelar</button>
+        <button class="btn-primary" onclick="changePassword()">Alterar Senha</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
